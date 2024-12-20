@@ -1,0 +1,163 @@
+-- im trying to learn
+local Player = game:GetService("Players")
+local LocalPlayer = Player.LocalPlayer
+local Char = LocalPlayer.Character
+local HR = Char.HumanoidRootPart
+local PlayerGui = LocalPlayer.PlayerGui
+local BuildGui = PlayerGui.BuildGui
+local MainFrame = BuildGui.MainFrame
+local Click = MainFrame.Click
+local Remotes = game:GetService("ReplicatedStorage"):WaitForChild("Remotes")
+local Hatching = Remotes.Eggs
+
+local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
+
+local FarmingWindow = Library:NewWindow("MazeSimulator🐍")
+
+local Farm = FarmingWindow:NewSection("Farm Options")
+
+local Hatch = FarmingWindow:NewSection("Hatch Options")
+
+--Main Tab
+
+-- AutoBook Toggle
+Farm:CreateToggle("AutoBook", function(state)
+    getgenv().Autobook = state
+    if getgenv().Autobook then
+        while getgenv().Autobook do
+            Remotes.Items.Click:FireServer(100)
+            task.wait(0.001)
+        end
+    end
+end)
+
+-- AutoClick Toggle
+Farm:CreateToggle("AutoClick", function(state)
+    getgenv().Autoclick = state
+    if getgenv().Autoclick then
+        local MainFrame = game:GetService("Players").LocalPlayer.PlayerGui.BuildGui.MainFrame
+        while getgenv().Autoclick do
+            if MainFrame and MainFrame.Visible then
+                local VU = game:GetService("VirtualUser")
+                VU:CaptureController()
+                local buttonPosition = Click.AbsolutePosition
+                VU:ClickButton1(buttonPosition)
+            end
+            task.wait(0.001)
+        end
+    end
+end)
+
+-- AutoRebirth Toggle
+Farm:CreateToggle("AutoRebirth", function(state)
+    getgenv().Autorebirth = state
+    if getgenv().Autorebirth then
+        while getgenv().Autorebirth do
+            Remotes.Rebirth.Rebirth:InvokeServer()
+            task.wait(5)
+        end
+    end
+end)
+
+-- AreaTeleport
+local Locations = {
+    World1 = Vector3.new(-270, 13, 550),
+    World2 = Vector3.new(90, 13, 550),
+    World3 = Vector3.new(475, 18, 550),
+    World4 = Vector3.new(860, 13, 550),
+    World5 = Vector3.new(1293, 13, 550),
+    World6 = Vector3.new(1700, 13, 550),
+}
+
+local selectedWorld = "World1"
+
+Farm:CreateDropdown("SelectArea", {"World1", "World2", "World3", "World4", "World5", "World6"}, 1, function(text)
+    selectedWorld = text
+end)
+
+Farm:CreateButton("Teleport", function()
+    local teleportPosition = Locations[selectedWorld]
+    Remotes.Portal.UpdateLastVisit:FireServer(selectedWorld)
+    HR.CFrame = CFrame.new(teleportPosition)
+end)
+
+-- Set Max Book Button
+Farm:CreateButton("SetMaxBook", function()
+    Remotes.Items.InteractItem:FireServer("Item25")
+end)
+
+-- Anti-AFK Button
+Farm:CreateButton("ClickForAntiAfk", function()
+    local screenGui = Instance.new("ScreenGui", game.Players.LocalPlayer:WaitForChild("PlayerGui"))
+    local textLabel = Instance.new("TextLabel", screenGui)
+
+    textLabel.Size = UDim2.new(0, 100, 0, 50)
+    textLabel.Position = UDim2.new(1, -110, 0, 10)
+    textLabel.BackgroundColor3 = Color3.fromRGB(64, 64, 64)
+    textLabel.Text = "AntiAfk:Active"
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textLabel.Font = Enum.Font.SourceSans
+    textLabel.TextSize = 18
+    textLabel.BorderSizePixel = 0
+    textLabel.BackgroundTransparency = 0.3
+
+    local bb = game:GetService('VirtualUser')
+    game:GetService('Players').LocalPlayer.Idled:Connect(function()
+        bb:CaptureController()
+        bb:ClickButton2(Vector2.new())
+    end)
+end)
+
+-- Hatch Tab
+
+Hatch:CreateDropdown("SelectEgg", {   
+    "Basic Egg",
+    "Ocean Egg",
+    "Jungle Egg",
+    "Prism Egg",
+    "Geode Egg",
+    "Christmas Egg",
+    "Relic Egg",
+    "Chaos Egg",
+    "Dominus Egg",
+    "Doom Egg",
+    "Blight Egg",
+    "Astro Egg",
+    "Pirate Egg",
+    "Stormseed Egg",
+    "Candy Egg",
+    "Circus Egg",
+    "Aethercore Egg",
+    "Gloomspore Egg"
+}, 1, function(text)
+    getgenv().SelectedEgg = text
+end)
+
+Hatch:CreateButton("Please Goto Egg Area", function() --this ui library doesnt have label😅
+print("Please Goto Egg Area")
+end)
+
+Hatch:CreateToggle("AutoHatch", function(state)
+    getgenv().Autohatch = state
+    if getgenv().Autohatch then
+        while getgenv().Autohatch do
+            if getgenv().SelectedEgg then 
+            Hatching.Hatch:InvokeServer(getgenv().SelectedEgg, 1)
+            Hatching.LeaveEggAnim:FireServer()
+            Hatching.CancelCooldown:FireServer()
+            end
+            task.wait(0.001)
+        end
+    end
+end)
+
+Hatch:CreateToggle("AutoCraftAll", function(state)
+    getgenv().Autocraftall = state
+    if getgenv().Autocraftall then
+        while getgenv().Autocraftall do
+            Remotes.Pets.CraftAll:FireServer()
+            task.wait(3)
+        end
+    end
+end)
+
