@@ -1,0 +1,71 @@
+local Player = game:GetService("Players")
+local LocalPlayer = Player.LocalPlayer
+local Char = LocalPlayer.Character
+local HR = Char.HumanoidRootPart
+local WBJ = game:GetService("ReplicatedStorage"):WaitForChild("WBJ")
+local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
+
+local RollingWindow = Library:NewWindow("Rolling")
+
+local CarsRNG = RollingWindow:NewSection("Farm Options")
+
+
+
+--autoroll options
+local selectOptions = "AutoSell"
+
+CarsRNG:CreateDropdown("SelectOptions", {"AutoSell", "AutoAdd"}, 1, function(text)
+    selectOptions = text
+end)
+
+CarsRNG:CreateToggle("AutoRoll", function(state)
+    getgenv().Autoroll = state
+    if getgenv().Autoroll then
+        while getgenv().Autoroll do
+        WBJ:WaitForChild("8c39fb8c-c31a-433d-97c6-6df7284c145f"):FireServer(1)           
+            if selectOptions == "AutoSell" then
+                WBJ:WaitForChild("5b2522b9-2241-454a-a8c5-faa4915eeb75"):FireServer(1, false)
+            elseif selectOptions == "AutoAdd" then
+                WBJ:WaitForChild("5b2522b9-2241-454a-a8c5-faa4915eeb75"):FireServer(1, true)
+            end    
+            task.wait(0.001)
+        end
+    end
+end)
+
+
+--autoexpand
+CarsRNG:CreateToggle("AutoExpand", function(state)
+    getgenv().Autoexpand = state
+    if getgenv().Autoexpand then
+        while getgenv().Autoexpand do
+            WBJ:WaitForChild("3a38102e-31ff-4db4-bec2-848e662c66bf"):FireServer(0)
+            task.wait(1)
+        end
+    end
+end)
+
+--antiafk
+CarsRNG:CreateButton("ClickForAntiAfk", function()
+    
+    local screenGui = Instance.new("ScreenGui", game.Players.LocalPlayer:WaitForChild("PlayerGui"))
+    local textLabel = Instance.new("TextLabel", screenGui)
+
+    textLabel.Size = UDim2.new(0, 100, 0, 50)
+    textLabel.Position = UDim2.new(1, -110, 0, 10)
+    textLabel.BackgroundColor3 = Color3.fromRGB(64, 64, 64)
+    textLabel.Text = "AntiAfk:Active"
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textLabel.Font = Enum.Font.SourceSans
+    textLabel.TextSize = 18
+    textLabel.BorderSizePixel = 0
+    textLabel.BackgroundTransparency = 0.3
+
+    
+    local bb = game:GetService('VirtualUser')
+    game:GetService('Players').LocalPlayer.Idled:Connect(function()
+        bb:CaptureController()
+        bb:ClickButton2(Vector2.new())
+    end)
+end)
+
