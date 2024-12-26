@@ -36,6 +36,33 @@ game:GetService("RunService").RenderStepped:Connect(function()
 end)
 end)
 
+--tp small server (ty chatgpt)
+LineSimulator:CreateButton("Goto Small Server", function()
+local HttpService = game:GetService("HttpService")
+local TeleportService = game:GetService("TeleportService")
+local PlaceId = game.PlaceId
+
+local function hopToSmallestServer()
+    local cursor = ""
+    while true do
+        local url = "https://games.roblox.com/v1/games/" .. PlaceId .. "/servers/Public?sortOrder=Asc&limit=100" .. (cursor ~= "" and "&cursor=" .. cursor or "")
+        local response = HttpService:JSONDecode(game:HttpGet(url))
+
+        for _, server in pairs(response.data) do
+            if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                TeleportService:TeleportToPlaceInstance(PlaceId, server.id)
+                return
+            end
+        end
+
+        cursor = response.nextPageCursor
+        if not cursor then break end
+    end
+end
+
+hopToSmallestServer()
+end)
+
 --antiafk
 LineSimulator:CreateButton("ClickForAntiAfk", function()
     
