@@ -1,0 +1,61 @@
+local Player = game:GetService("Players")
+local LocalPlayer = Player.LocalPlayer
+local Char = LocalPlayer.Character
+local HR = Char.HumanoidRootPart
+local PlayerGui = LocalPlayer.PlayerGui
+local Events = game:GetService("ReplicatedStorage"):WaitForChild("Events")
+
+local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
+
+local FarmingWindow = Library:NewWindow("Farming")
+
+local LineSimulator = FarmingWindow:NewSection("Farm Options")
+
+--autocut
+LineSimulator:CreateToggle("AutoCut", function(state)
+    getgenv().Autobook = state
+    if getgenv().Autobook then
+        while getgenv().Autobook do
+            Events:WaitForChild("Line"):WaitForChild("BuyNext"):FireServer()
+
+            task.wait(1)
+        end
+    end
+end)
+
+--remove gay purchase prompt
+LineSimulator:CreateButton("RemovePurchasePrompt", function()
+local CoreGui = game:GetService("CoreGui")
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    for _, v in pairs(CoreGui:GetChildren()) do
+        if v:IsA("ScreenGui") and (v.Name:match("Prompt") or v.Name:match("Purchase")) then
+            v:Destroy()
+        end
+    end
+end)
+end)
+
+--antiafk
+LineSimulator:CreateButton("ClickForAntiAfk", function()
+    
+    local screenGui = Instance.new("ScreenGui", game.Players.LocalPlayer:WaitForChild("PlayerGui"))
+    local textLabel = Instance.new("TextLabel", screenGui)
+
+    textLabel.Size = UDim2.new(0, 100, 0, 50)
+    textLabel.Position = UDim2.new(1, -110, 0, 10)
+    textLabel.BackgroundColor3 = Color3.fromRGB(64, 64, 64)
+    textLabel.Text = "AntiAfk:Active"
+    textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    textLabel.Font = Enum.Font.SourceSans
+    textLabel.TextSize = 18
+    textLabel.BorderSizePixel = 0
+    textLabel.BackgroundTransparency = 0.3
+
+    
+    local bb = game:GetService('VirtualUser')
+    game:GetService('Players').LocalPlayer.Idled:Connect(function()
+        bb:CaptureController()
+        bb:ClickButton2(Vector2.new())
+    end)
+end)
